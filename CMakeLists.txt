@@ -17,8 +17,8 @@ include_directories(include)
 # Source files
 # ------------------------------------------------------------------------------
 
-file(GLOB_RECURSE LIB_SOURCES src/*.cpp)
-file(GLOB_RECURSE LIB_HEADERS include/wavelet/*.hpp)
+file(GLOB_RECURSE LIB_SOURCES src/*/*.cpp)
+file(GLOB_RECURSE LIB_HEADERS include/*/*.hpp)
 
 # ------------------------------------------------------------------------------
 # Wavelet Library
@@ -42,7 +42,16 @@ endforeach()
 # Tests
 # ------------------------------------------------------------------------------
 
-file(GLOB TEST_SOURCES tests/*.cpp)
+
+set(TEST_SOURCES tests/main.cpp)
+file(GLOB_RECURSE OTHER_TESTS tests/*/*.cpp)
+list(APPEND TEST_SOURCES ${OTHER_TESTS})
 
 add_executable(test_runner ${TEST_SOURCES})
+
+add_custom_command(TARGET test_runner POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:test_runner>/data
+)
+
 target_link_libraries(test_runner wavelet_toolkit)
